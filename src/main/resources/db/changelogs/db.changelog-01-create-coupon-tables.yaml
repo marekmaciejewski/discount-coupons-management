@@ -1,0 +1,105 @@
+databaseChangeLog:
+  - changeSet:
+      id: 260807-01-create-coupon
+      author: Marek
+      changes:
+        - createTable:
+            tableName: COUPON
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: COUPON_PK
+              - column:
+                  name: CODE
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: NORMALIZED_CODE
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATED_AT
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MAX_USES
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CURRENT_USES
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: COUNTRY_CODE
+                  type: CHAR(2)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: COUPON
+            columnNames: NORMALIZED_CODE
+            constraintName: COUPON_NORMALIZED_CODE_UK
+        - sql:
+            sql: ALTER TABLE COUPON ADD CONSTRAINT COUPON_MAX_USES_POSITIVE_CHK CHECK (MAX_USES > 0)
+        - sql:
+            sql: ALTER TABLE COUPON ADD CONSTRAINT COUPON_CURRENT_USES_RANGE_CHK CHECK (CURRENT_USES >= 0 AND CURRENT_USES <= MAX_USES)
+
+  - changeSet:
+      id: 260807-02-create-coupon-redemption
+      author: Marek
+      changes:
+        - createTable:
+            tableName: COUPON_REDEMPTION
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: COUPON_REDEMPTION_PK
+              - column:
+                  name: COUPON_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: USER_ID
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CLIENT_IP
+                  type: VARCHAR(45)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: RESOLVED_COUNTRY_CODE
+                  type: CHAR(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: USED_AT
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: COUPON_REDEMPTION
+            baseColumnNames: COUPON_ID
+            referencedTableName: COUPON
+            referencedColumnNames: ID
+            constraintName: COUPON_REDEMPTION_COUPON_FK
+        - addUniqueConstraint:
+            tableName: COUPON_REDEMPTION
+            columnNames: COUPON_ID, USER_ID
+            constraintName: COUPON_REDEMPTION_COUPON_USER_UK

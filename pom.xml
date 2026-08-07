@@ -28,15 +28,35 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.46</lombok.version>
+        <openapi-generator.version>7.6.0</openapi-generator.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-h2console</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.3</version>
         </dependency>
 
         <dependency>
@@ -61,40 +81,80 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
                 <executions>
                     <execution>
-                        <id>default-compile</id>
-                        <phase>compile</phase>
+                        <id>generate-api-contract</id>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/discount-coupons-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>pl.mm.discountcoupons.api</apiPackage>
+                            <modelPackage>pl.mm.discountcoupons.api.dto</modelPackage>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <schemaMappings>
+                                <schemaMapping>ProblemDetail=org.springframework.http.ProblemDetail</schemaMapping>
+                            </schemaMappings>
+                            <importMappings>
+                                <importMapping>ProblemDetail=org.springframework.http.ProblemDetail</importMapping>
+                            </importMappings>
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <interfaceOnly>true</interfaceOnly>
+                                <openApiNullable>false</openApiNullable>
+                                <performBeanValidation>true</performBeanValidation>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useResponseEntity>true</useResponseEntity>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useTags>true</useTags>
+                            </configOptions>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
                     <execution>
-                        <id>default-testCompile</id>
-                        <phase>test-compile</phase>
                         <goals>
-                            <goal>testCompile</goal>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
-                        <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -1,3 +1,19 @@
 spring:
   application:
     name: discount-coupons-management
+  datasource:
+    url: jdbc:h2:mem:discount-coupons;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  port: ${PORT:8080}
+
+app:
+  geo:
+    ipwhois:
+      base-url: ${APP_GEO_IPWHOIS_BASE_URL:https://ipwho.is}

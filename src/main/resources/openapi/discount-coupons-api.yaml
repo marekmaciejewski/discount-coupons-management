@@ -1,0 +1,282 @@
+openapi: 3.0.3
+info:
+  title: Discount Coupons API
+  version: 1.0.0
+  description: API for creating discount coupons and registering coupon redemptions.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: coupons
+  - name: coupon-redemptions
+paths:
+  /coupons:
+    post:
+      tags:
+        - coupons
+      operationId: createCoupon
+      summary: Create a discount coupon.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponCreateRequest"
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: Created coupon URI.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /coupons/{code}:
+    get:
+      tags:
+        - coupons
+      operationId: getCoupon
+      summary: Get a coupon by code.
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: The coupon code. Matching is case-insensitive.
+          schema:
+            type: string
+            example: WIOSNA
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /coupon-redemptions:
+    post:
+      tags:
+        - coupon-redemptions
+      operationId: redeemCoupon
+      summary: Register one coupon use by a user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponRedemptionRequest"
+      responses:
+        "201":
+          description: Redeemed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponRedemptionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+components:
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    Forbidden:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    NotFound:
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    Conflict:
+      description: Conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    ServiceUnavailable:
+      description: Service Unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+  schemas:
+    ProblemDetail:
+      description: Problem detail response.
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+        errors:
+          type: array
+          description: Field validation errors, present for validation failures.
+          items:
+            $ref: "#/components/schemas/ValidationError"
+      required:
+        - title
+        - status
+        - detail
+        - instance
+    ValidationError:
+      description: Field validation error.
+      type: object
+      properties:
+        field:
+          type: string
+          example: code
+        message:
+          type: string
+          example: must not be blank
+      required:
+        - field
+        - message
+    CouponCreateRequest:
+      description: Coupon creation command.
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 64
+          x-extra-annotation: '@jakarta.validation.constraints.NotBlank'
+          description: Unique coupon code. Matching is case-insensitive.
+          example: WIOSNA
+        maxUses:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Maximum number of successful coupon redemptions.
+          example: 100
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+          pattern: "^[A-Za-z]{2}$"
+          x-extra-annotation: '@jakarta.validation.constraints.NotBlank'
+          description: ISO 3166-1 alpha-2 country code where this coupon can be redeemed.
+          example: PL
+      required:
+        - code
+        - maxUses
+        - countryCode
+    CouponResponse:
+      description: Discount coupon.
+      type: object
+      properties:
+        code:
+          type: string
+          example: WIOSNA
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-08-07T12:00:00Z"
+        maxUses:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 100
+        currentUses:
+          type: integer
+          format: int32
+          minimum: 0
+          example: 3
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: PL
+      required:
+        - code
+        - createdAt
+        - maxUses
+        - currentUses
+        - countryCode
+    CouponRedemptionRequest:
+      description: Coupon redemption command.
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 64
+          x-extra-annotation: '@jakarta.validation.constraints.NotBlank'
+          description: Coupon code to redeem. Matching is case-insensitive.
+          example: WIOSNA
+        userId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          x-extra-annotation: '@jakarta.validation.constraints.NotBlank'
+          description: User identifier. A user can redeem a given coupon once.
+          example: user-123
+      required:
+        - code
+        - userId
+    CouponRedemptionResponse:
+      description: Successful coupon redemption.
+      type: object
+      properties:
+        code:
+          type: string
+          example: WIOSNA
+        userId:
+          type: string
+          example: user-123
+        usedAt:
+          type: string
+          format: date-time
+          example: "2026-08-07T12:05:00Z"
+        currentUses:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 4
+        maxUses:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 100
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: PL
+      required:
+        - code
+        - userId
+        - usedAt
+        - currentUses
+        - maxUses
+        - countryCode

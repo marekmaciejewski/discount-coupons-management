@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/198.51.100.20"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "success": true,
+      "country_code": "DE"
+    }
+  }
+}

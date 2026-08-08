@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/192.0.2.99"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "success": true,
+      "country_code": null
+    }
+  }
+}

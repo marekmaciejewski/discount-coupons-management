@@ -1,10 +1,12 @@
 package pl.mm.discountcoupons.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.client.RestClient;
 import pl.mm.discountcoupons.api.dto.CouponCreateRequest;
 import pl.mm.discountcoupons.api.dto.CouponRedemptionRequest;
 import pl.mm.discountcoupons.api.dto.CouponRedemptionResponse;
@@ -21,13 +23,20 @@ import java.util.Locale;
 
 @Configuration
 @RequiredArgsConstructor
-public class CouponPrototypeConfiguration {
+public class CouponConfiguration {
 
     private final Clock clock;
 
     @Bean
     static Clock clock() {
         return Clock.systemUTC();
+    }
+
+    @Bean
+    public RestClient ipwhoisRestClient(@Value("${app.geo.ipwhois.base-url}") String baseUrl) {
+        return RestClient.builder()
+                .baseUrl(baseUrl)
+                .build();
     }
 
     @Bean

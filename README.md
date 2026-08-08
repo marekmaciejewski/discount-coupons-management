@@ -37,17 +37,13 @@ On macOS/Linux:
 ./mvnw spring-boot:run
 ```
 
-The application starts on `8080` by default. Override the port or IP lookup service with environment variables:
+The application starts on [http://localhost:8080](http://localhost:8080) by default. Coupon country checks use the external [ipwho.is](https://ipwho.is) service to resolve the client IP address.
 
-```sh
-PORT=8081 APP_GEO_IPWHOIS_BASE_URL=https://ipwho.is ./mvnw spring-boot:run// todo: mention the external service instead of this config
-```
+Useful local URLs:
 
-Useful local URLs: // todo: make them clickable
-
-- `http://localhost:8080/swagger-ui.html`
-- `http://localhost:8080/v3/api-docs`
-- `http://localhost:8080/h2-console`
+- [Swagger UI](http://localhost:8080/swagger-ui.html)
+- [OpenAPI JSON](http://localhost:8080/v3/api-docs)
+- [H2 console](http://localhost:8080/h2-console)
 
 ## API
 
@@ -55,4 +51,6 @@ Useful local URLs: // todo: make them clickable
 - `GET /coupons/{code}` reads a coupon by code.
 - `POST /coupon-redemptions` redeems a coupon for a user. The client IP is resolved from `X-Forwarded-For` or the remote address.
 
-The OpenAPI contract lives in `src/main/resources/openapi/discount-coupons-api.yaml`. Generated API interfaces and DTOs are produced under `target/generated-sources/openapi`. // todo: link to file?
+The application trusts forwarding headers when resolving the client IP for country checks. Run it behind trusted infrastructure that strips or controls headers such as `Forwarded`, `X-Forwarded-For`, and `X-Real-IP`; otherwise callers can spoof their apparent source IP.
+
+The OpenAPI contract lives in [src/main/resources/openapi/discount-coupons-api.yaml](src/main/resources/openapi/discount-coupons-api.yaml). Generated API interfaces and DTOs are produced under `target/generated-sources/openapi`.

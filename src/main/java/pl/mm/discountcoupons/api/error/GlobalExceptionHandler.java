@@ -20,7 +20,6 @@ import pl.mm.discountcoupons.domain.CouponExhaustedException;
 import pl.mm.discountcoupons.domain.CouponNotFoundException;
 
 import java.net.URI;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,8 +60,6 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException e,
             HttpServletRequest request) {
         List<ValidationError> errors = e.getBindingResult().getFieldErrors().stream()
-                .sorted(Comparator.comparing(FieldError::getField)
-                        .thenComparing(error -> Objects.toString(error.getDefaultMessage(), "")))
                 .map(error -> new ValidationError(error.getField(), message(error)))
                 .toList();
 

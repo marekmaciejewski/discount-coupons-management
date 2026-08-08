@@ -10,10 +10,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-server:
-  port: ${PORT:8080}
-
 app:
   geo:
     ipwhois:
-      base-url: ${APP_GEO_IPWHOIS_BASE_URL:https://ipwho.is}
+      base-url: https://ipwho.is

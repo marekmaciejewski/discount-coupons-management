@@ -1,6 +1,7 @@
 package pl.mm.discountcoupons.application;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +9,7 @@ import pl.mm.discountcoupons.api.dto.CouponCreateRequest;
 import pl.mm.discountcoupons.api.dto.CouponRedemptionRequest;
 import pl.mm.discountcoupons.api.dto.CouponRedemptionResponse;
 import pl.mm.discountcoupons.api.dto.CouponResponse;
-import pl.mm.discountcoupons.config.CouponPrototypeConfiguration;
+import pl.mm.discountcoupons.config.CouponConfiguration;
 import pl.mm.discountcoupons.domain.CouponAlreadyExistsException;
 import pl.mm.discountcoupons.domain.CouponAlreadyUsedException;
 import pl.mm.discountcoupons.domain.CouponCountryMismatchException;
@@ -26,7 +27,7 @@ public class CouponService {
 
     private final CouponRepository couponRepository;
     private final CouponRedemptionRepository couponRedemptionRepository;
-    private final CouponPrototypeConfiguration couponPrototypes;
+    private final CouponConfiguration couponPrototypes;
     private final IpCountryResolver ipCountryResolver;
 
     @Transactional
@@ -47,28 +48,31 @@ public class CouponService {
 
     @Transactional
     public CouponRedemptionResponse redeemCoupon(CouponRedemptionRequest request, String clientIp) {
-        String code = request.getCode().trim();
-        Coupon coupon = getCouponForUpdate(code);
+        Coupon coupon = getCouponForUpdate(request.getCode().trim());
         String resolvedCountryCode = ipCountryResolver.resolveCountryCode(clientIp);
         validateCouponCountry(coupon, resolvedCountryCode);
+        CouponRedemption couponRedemption = processCouponRedemption(request, clientIp, coupon, resolvedCountryCode);
+        Coupon updatedCoupon = incrementUses(coupon);
+        return couponPrototypes.couponRedemptionResponse(updatedCoupon, couponRedemption);
+    }
 
+    private @NonNull CouponRedemption processCouponRedemption(CouponRedemptionRequest request, String clientIp, Coupon coupon, String resolvedCountryCode) {
         CouponRedemption couponRedemption =
                 couponPrototypes.couponRedemption(coupon, request, clientIp, resolvedCountryCode);
         try {
-            couponRedemptionRepository.save(couponRedemption);
+            return couponRedemptionRepository.save(couponRedemption);
         } catch (DataIntegrityViolationException e) {
             throw new CouponAlreadyUsedException(
                     couponRedemption.userId() + " already used " + coupon.code() + " coupon");
         }
+    }
 
+    private @NonNull Coupon incrementUses(Coupon coupon) {
         int updatedRows = couponRepository.incrementCurrentUsesIfAvailable(coupon.id());
         if (updatedRows == 0) {
             throw new CouponExhaustedException(coupon.code() + " coupon has reached its maximum number of uses");
         }
-
-        Coupon updatedCoupon = couponRepository.findById(coupon.id())
-                .orElseThrow(() -> new CouponNotFoundException(coupon.code() + " coupon not found"));
-        return couponPrototypes.couponRedemptionResponse(updatedCoupon, couponRedemption);
+        return couponRepository.findById(coupon.id()).orElseThrow();
     }
 
     private Coupon getCouponForUpdate(String code) {

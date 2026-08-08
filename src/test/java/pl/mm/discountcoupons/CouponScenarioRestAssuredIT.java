@@ -24,14 +24,11 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "spring.datasource.url=jdbc:h2:mem:coupon-scenario-rest-assured;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableWireMock(@ConfigureWireMock(
         name = "ipwhois",
-        baseUrlProperties = "app.geo.ipwhois.base-url",
-        filesUnderClasspath = "wiremock"))
-@Sql(scripts = "/sql/clear-coupons.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+        baseUrlProperties = "app.geo.ipwhois.base-url"))
+@Sql(scripts = "/sql/clear-coupons.sql")
 class CouponScenarioRestAssuredIT {
 
     private static final Instant SCENARIO_INSTANT = Instant.parse("2026-08-07T12:00:00Z");
@@ -49,10 +46,10 @@ class CouponScenarioRestAssuredIT {
                         dynamicTest("read WIOSNA coupon case-insensitively", () -> checkCoupon(0)),
                         dynamicTest("reject duplicate code with different case", this::rejectDuplicateCode))),
                 dynamicContainer("Redeem coupon", Stream.of(
-                        dynamicTest("redeem for first Polish user", () -> redeem("user-1", POLISH_IP, 1)),
+                        dynamicTest("redeem for first Polish user", () -> redeem("user-1", 1)),
                         dynamicTest("reject second redemption by the same user", this::rejectDuplicateUser),
                         dynamicTest("reject redemption from another country", this::rejectWrongCountry),
-                        dynamicTest("redeem for second Polish user", () -> redeem("user-2", POLISH_IP, 2)),
+                        dynamicTest("redeem for second Polish user", () -> redeem("user-2", 2)),
                         dynamicTest("reject redemption after max uses is reached", this::rejectExhaustedCoupon),
                         dynamicTest("read final coupon usage", () -> checkCoupon(2)))));
     }
@@ -111,9 +108,9 @@ class CouponScenarioRestAssuredIT {
                 .body("detail", equalTo("wiosna coupon already exists"));
     }
 
-    private void redeem(String userId, String ip, int expectedCurrentUses) {
+    private void redeem(String userId, int expectedCurrentUses) {
         request()
-                .header("X-Forwarded-For", ip)
+                .header("X-Forwarded-For", POLISH_IP)
                 .contentType(ContentType.JSON)
                 .body("""
                         {

@@ -13,14 +13,14 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.startsWith;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/sql/clear-coupons.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/sql/clear-coupons.sql")
 class CouponApiValidationRestAssuredIT {
 
     @LocalServerPort
     private int port;
 
     @Test
-    void createCouponReturnsBadRequestForInvalidBody() {
+    void createCoupon_returnsBadRequest_forInvalidBody() {
         request()
                 .contentType(ContentType.JSON)
                 .body("""
@@ -41,7 +41,7 @@ class CouponApiValidationRestAssuredIT {
     }
 
     @Test
-    void redeemCouponReturnsBadRequestForMissingRequiredFields() {
+    void redeemCoupon_returnsBadRequest_forMissingRequiredFields() {
         request()
                 .contentType(ContentType.JSON)
                 .body("{}")
@@ -56,7 +56,7 @@ class CouponApiValidationRestAssuredIT {
     }
 
     @Test
-    void createCouponReturnsBadRequestForMalformedBody() {
+    void createCoupon_returnsBadRequest_forMalformedBody() {
         request()
                 .contentType(ContentType.JSON)
                 .body("{")
@@ -70,7 +70,7 @@ class CouponApiValidationRestAssuredIT {
     }
 
     @Test
-    void createCouponReturnsConflictForCaseInsensitiveDuplicateCode() {
+    void createCoupon_returnsConflict_forCaseInsensitiveDuplicateCode() {
         createCoupon("WIOSNA", 2, "PL");
 
         request()
@@ -92,7 +92,7 @@ class CouponApiValidationRestAssuredIT {
     }
 
     @Test
-    void getCouponReturnsNotFoundForUnknownCode() {
+    void getCoupon_returnsNotFound_forUnknownCode() {
         request()
         .when()
                 .get("/coupons/{code}", "UNKNOWN")
@@ -103,7 +103,7 @@ class CouponApiValidationRestAssuredIT {
                 .body("instance", equalTo("/coupons/UNKNOWN"));
     }
 
-    private void createCoupon(String code, int maxUses, String countryCode) {
+    private void createCoupon(String code, int maxUses, String countryCode) { // todo: inline
         request()
                 .contentType(ContentType.JSON)
                 .body("""

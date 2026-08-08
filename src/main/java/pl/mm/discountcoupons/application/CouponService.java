@@ -1,7 +1,7 @@
 package pl.mm.discountcoupons.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.mm.discountcoupons.api.dto.CouponCreateRequest;
@@ -15,6 +15,8 @@ import pl.mm.discountcoupons.domain.CouponExhaustedException;
 import pl.mm.discountcoupons.domain.CouponNotFoundException;
 import pl.mm.discountcoupons.ip.IpCountryResolver;
 import pl.mm.discountcoupons.persistence.Coupon;
+import pl.mm.discountcoupons.persistence.CouponRedemption;
+import pl.mm.discountcoupons.persistence.CouponRedemptionRepository;
 import pl.mm.discountcoupons.persistence.CouponRepository;
 
 import java.time.Clock;
@@ -29,6 +31,7 @@ import java.util.Locale;
 public class CouponService {
 
     private final CouponRepository couponRepository;
+    private final CouponRedemptionRepository couponRedemptionRepository;
     private final CouponCodeNormalizer codeNormalizer;
     private final IpCountryResolver ipCountryResolver;
     private final Clock clock;
@@ -42,8 +45,8 @@ public class CouponService {
         Coupon coupon = new Coupon(null, code, normalizedCode, createdAt, request.getMaxUses(), 0, countryCode);
 
         try {
-            return toResponse(couponRepository.insert(coupon));
-        } catch (DuplicateKeyException e) {
+            return toResponse(couponRepository.save(coupon));
+        } catch (DataIntegrityViolationException e) {
             throw new CouponAlreadyExistsException(code + " coupon already exists");
         }
     }
@@ -64,8 +67,10 @@ public class CouponService {
 
         Instant usedAt = now();
         try {
-            couponRepository.insertRedemption(coupon.id(), userId, clientIp, resolvedCountryCode, usedAt);
-        } catch (DuplicateKeyException e) {
+            CouponRedemption couponRedemption =
+                    new CouponRedemption(null, coupon.id(), userId, clientIp, resolvedCountryCode, usedAt);
+            couponRedemptionRepository.save(couponRedemption);
+        } catch (DataIntegrityViolationException e) {
             throw new CouponAlreadyUsedException(userId + " already used " + coupon.code() + " coupon");
         }
 

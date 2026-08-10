@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/192.0.2.102"
+  },
+  "response": {
+    "status": 502,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "success": false,
+      "message": "upstream service unavailable"
+    }
+  }
+}

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
         name = "ipwhois",
         baseUrlProperties = "app.geo.ipwhois.base-url"))
 @Sql(scripts = "/sql/clear-coupons.sql")
-class CouponScenarioRestAssuredIT {
+class CouponScenarioIT {
 
     private static final Instant SCENARIO_INSTANT = Instant.parse("2026-08-07T12:00:00Z");
     private static final String POLISH_IP = "203.0.113.10";

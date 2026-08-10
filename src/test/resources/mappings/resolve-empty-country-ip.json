@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/192.0.2.101"
+  },
+  "response": {
+    "status": 204
+  }
+}

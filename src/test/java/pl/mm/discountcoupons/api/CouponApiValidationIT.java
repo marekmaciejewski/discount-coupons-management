@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/clear-coupons.sql")
-class CouponApiValidationRestAssuredIT {
+class CouponApiValidationIT {
 
     @LocalServerPort
     private int port;
@@ -71,7 +71,7 @@ class CouponApiValidationRestAssuredIT {
 
     @Test
     void createCoupon_returnsConflict_forCaseInsensitiveDuplicateCode() {
-        createCoupon("WIOSNA", 2, "PL");
+        createCoupon();
 
         request()
                 .contentType(ContentType.JSON)
@@ -103,21 +103,21 @@ class CouponApiValidationRestAssuredIT {
                 .body("instance", equalTo("/coupons/UNKNOWN"));
     }
 
-    private void createCoupon(String code, int maxUses, String countryCode) { // todo: inline
+    private void createCoupon() {
         request()
                 .contentType(ContentType.JSON)
                 .body("""
                         {
-                          "code": "%s",
-                          "maxUses": %d,
-                          "countryCode": "%s"
+                          "code": "WIOSNA",
+                          "maxUses": 2,
+                          "countryCode": "PL"
                         }
-                        """.formatted(code, maxUses, countryCode))
+                        """)
         .when()
                 .post("/coupons")
         .then()
                 .statusCode(201)
-                .header("Location", "/coupons/" + code);
+                .header("Location", "/coupons/" + "WIOSNA");
     }
 
     private RequestSpecification request() {

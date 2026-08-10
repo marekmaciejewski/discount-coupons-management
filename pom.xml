@@ -19,6 +19,15 @@
         <jacocoArgLine></jacocoArgLine>
         <openapi-generator.version>7.6.0</openapi-generator.version>
         <rest-assured.version>6.0.1</rest-assured.version>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>marekmaciejewski</sonar.organization>
+        <sonar.projectKey>marekmaciejewski_discount-coupons-management</sonar.projectKey>
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <sonar.sources>src/main/java,src/main/resources</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.exclusions>target/generated-sources/openapi/**</sonar.exclusions>
+        <sonar.coverage.exclusions>src/main/resources/**,src/main/java/pl/mm/discountcoupons/DiscountCouponsManagementApplication.java,target/generated-sources/openapi/**</sonar.coverage.exclusions>
         <wiremock-spring-boot.version>4.2.2</wiremock-spring-boot.version>
     </properties>
     <dependencies>

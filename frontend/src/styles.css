@@ -175,32 +175,6 @@ body {
   padding-top: 2.4rem;
 }
 
-.mode-tabs {
-  display: flex;
-  width: min(100%, 448px);
-  margin-bottom: 1.35rem;
-  border-bottom: 1px solid var(--coupon-border);
-}
-
-.mode-tab {
-  flex: 1 1 0;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  padding: 0.65rem 0.8rem;
-  background: transparent;
-  color: var(--coupon-muted);
-  font-weight: 700;
-}
-
-.mode-tab:hover,
-.mode-tab.active {
-  color: var(--coupon-orange);
-}
-
-.mode-tab.active {
-  border-bottom-color: var(--coupon-orange);
-}
-
 .react-box-container {
   width: min(100%, 448px);
 }
@@ -380,7 +354,8 @@ body {
   }
 
   .coupon-sidebar {
-    display: none;
+    padding-top: 0;
+    padding-bottom: 1.5rem;
   }
 
   .coupon-main {
@@ -428,19 +403,12 @@ body {
     text-align: left;
   }
 
-  .mode-tabs,
   .react-box-container,
   .form-stack,
   .result-panel,
   .status-alert {
     width: 100%;
     max-width: none;
-  }
-
-  .mode-tab {
-    padding-right: 0.45rem;
-    padding-left: 0.45rem;
-    font-size: 0.92rem;
   }
 
   .detail-grid {

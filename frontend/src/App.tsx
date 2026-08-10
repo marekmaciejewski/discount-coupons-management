@@ -22,10 +22,10 @@ type ResultState =
       redemption: CouponRedemptionResponse;
     };
 
-const modeOptions: Array<{ id: Mode; label: string; menuLabel: string }> = [
-  { id: "check", label: "Sprawdź", menuLabel: "sprawdź status i limit" },
-  { id: "redeem", label: "Zrealizuj", menuLabel: "zrealizuj kupon" },
-  { id: "create", label: "Utwórz", menuLabel: "utwórz nowy kupon" }
+const modeOptions: Array<{ id: Mode; menuLabel: string }> = [
+  { id: "check", menuLabel: "sprawdź status i limit" },
+  { id: "redeem", menuLabel: "zrealizuj kupon" },
+  { id: "create", menuLabel: "utwórz nowy kupon" }
 ];
 
 const modeCopy: Record<Mode, { title: string; description: string; button: string; busy: string }> = {
@@ -179,6 +179,13 @@ export default function App() {
   const isBusy = submitAction !== null;
   const isRenderBackend = api.baseUrl.includes("onrender.com");
   const currentCopy = modeCopy[mode];
+
+  function handleModeChange(nextMode: Mode) {
+    setMode(nextMode);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setResult(null);
+  }
 
   async function runBackendAction(action: Mode, callback: () => Promise<void>) {
     setSubmitAction(action);
@@ -419,12 +426,7 @@ export default function App() {
         </nav>
         <div className="header-subnav">
           <div className="container page-container">
-            <a className="subnav-link active" href={import.meta.env.BASE_URL}>
-              Promocje
-            </a>
-            <span className="subnav-link">Kupony rabatowe</span>
-            <span className="subnav-link">Kody dla klientów</span>
-            <span className="subnav-link ms-lg-auto">Panel demo</span>
+            <span className="subnav-link active">Kupony rabatowe</span>
           </div>
         </div>
       </header>
@@ -442,32 +444,14 @@ export default function App() {
                 key={option.id}
                 className={`sidebar-link ${mode === option.id ? "active" : ""}`}
                 type="button"
-                onClick={() => setMode(option.id)}
+                onClick={() => handleModeChange(option.id)}
               >
                 {option.menuLabel}
               </button>
             ))}
-            <a className="sidebar-link" href={`${api.baseUrl}/v3/api-docs`} target="_blank" rel="noreferrer">
-              kontrakt OpenAPI
-            </a>
           </aside>
 
           <section className="coupon-main" aria-labelledby="coupon-action-title">
-            <div className="mode-tabs" role="tablist" aria-label="Akcja kuponu">
-              {modeOptions.map((option) => (
-                <button
-                  key={option.id}
-                  className={`mode-tab ${mode === option.id ? "active" : ""}`}
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === option.id}
-                  onClick={() => setMode(option.id)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-
             <div className="react-box-container">
               <h2 id="coupon-action-title">{currentCopy.title}</h2>
               <p>{currentCopy.description}</p>

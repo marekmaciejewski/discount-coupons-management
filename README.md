@@ -54,6 +54,8 @@ In GitHub Actions, the [Coverage and SonarQube](https://github.com/marekmaciejew
 workflow shows a coverage table in the job summary, uploads the full HTML report as the `jacoco-coverage-report`
 artifact, and publishes analysis to the
 [SonarQube Cloud report](https://sonarcloud.io/summary/overall?id=marekmaciejewski_discount-coupons-management&branch=master).
+The analysis includes backend sources, frontend TypeScript/React sources, and the frontend Pages workflow. Frontend
+generated API types, build output, dependencies, and frontend coverage are excluded until frontend tests are added.
 
 The [Frontend Pages](https://github.com/marekmaciejewski/discount-coupons-management/actions/workflows/frontend-pages.yml)
 workflow builds the Vite app from `frontend` and deploys it to GitHub Pages.

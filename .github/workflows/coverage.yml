@@ -38,6 +38,19 @@ jobs:
       - name: Run tests and generate coverage
         run: ./mvnw -B clean verify
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Prepare frontend sources for analysis
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run generate:api
+
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:

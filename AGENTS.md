@@ -20,3 +20,17 @@ This is a Java 21 Spring Boot 4 application for discount coupon creation and red
 - Keep Liquibase changes in `src/main/resources/db/changelogs` and include them from `src/main/resources/db/changelog/db.changelog-master.yaml`.
 - Keep WireMock mappings in the default `src/test/resources/mappings` directory unless a test has a strong reason to customize the file root.
 - Reuse the test datasource from `src/test/resources/application.yaml`; avoid per-test in-memory database names unless isolation actually requires it.
+
+## SonarQube MCP
+
+When SonarQube MCP tools are available, use them for code-quality context instead of guessing from badges.
+
+Resolve the project key from `pom.xml`:
+
+```text
+marekmaciejewski_discount-coupons-management
+```
+
+Use `branch: "master"` for the long-lived branch unless the user explicitly asks for a pull request or another branch. Do not pass a git branch name as `pullRequest`; SonarQube PR keys are different.
+
+A useful first check is `get_project_quality_gate_status` with the project key and `branch: "master"`. Treat any remembered result as point-in-time only and recheck when quality status matters.

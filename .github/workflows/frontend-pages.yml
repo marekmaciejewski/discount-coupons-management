@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - refinement
     paths:
       - "frontend/**"
       - "src/main/resources/openapi/discount-coupons-api.yaml"

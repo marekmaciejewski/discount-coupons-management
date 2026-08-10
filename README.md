@@ -5,6 +5,18 @@
 
 Spring Boot service for creating discount coupons and registering coupon redemptions. Coupons are matched case-insensitively, have a maximum use count, and can be restricted to a country resolved from the client IP address.
 
+## Live Demo
+
+- [Swagger UI](https://discount-coupons-management.onrender.com/swagger-ui/index.html)
+- API base URL: `https://discount-coupons-management.onrender.com`
+
+> [!IMPORTANT]
+> The first request after inactivity may take about a minute. The backend runs on Render Free and may need to wake up
+> before the demo responds.
+
+The hosted backend uses ephemeral in-memory H2 storage. Restart, redeploy, or idle spin-down starts with an empty
+database, so demo coupons need to be created before they can be redeemed.
+
 ## Requirements
 
 - JDK 21
@@ -62,3 +74,22 @@ Useful local URLs:
 The application trusts forwarding headers when resolving the client IP for country checks. Run it behind trusted infrastructure that strips or controls headers such as `Forwarded`, `X-Forwarded-For`, and `X-Real-IP`; otherwise callers can spoof their apparent source IP.
 
 The OpenAPI contract lives in [src/main/resources/openapi/discount-coupons-api.yaml](src/main/resources/openapi/discount-coupons-api.yaml). Generated API interfaces and DTOs are produced under `target/generated-sources/openapi`.
+
+Quick smoke test against the hosted backend:
+
+```powershell
+curl.exe https://discount-coupons-management.onrender.com/v3/api-docs
+```
+
+## Deployment Notes
+
+The checked-in `Dockerfile` builds the Maven project with JDK 21 and runs the packaged jar on a JRE image. For Render,
+create a Web Service from this repository, select the Free instance type, and use Docker as the runtime.
+
+Deployment-relevant environment variables:
+
+| variable                    | example                    | purpose                                               |
+|-----------------------------|----------------------------|-------------------------------------------------------|
+| `PORT`                      | provided by Render         | host-provided server port, defaults to `8080` locally |
+| `SPRING_H2_CONSOLE_ENABLED` | `false`                    | disables the public H2 console in the hosted service  |
+| `JAVA_TOOL_OPTIONS`         | `-XX:MaxRAMPercentage=75`  | caps JVM heap relative to container memory            |

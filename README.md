@@ -7,6 +7,7 @@ Spring Boot service for creating discount coupons and registering coupon redempt
 
 ## Live Demo
 
+- [Frontend UI](https://marekmaciejewski.github.io/discount-coupons-management/)
 - [Swagger UI](https://discount-coupons-management.onrender.com/swagger-ui/index.html)
 - API base URL: `https://discount-coupons-management.onrender.com`
 
@@ -21,6 +22,7 @@ database, so demo coupons need to be created before they can be redeemed.
 
 - JDK 21
 - Maven wrapper included in the repository
+- Node.js 24 for the optional frontend UI
 
 ## Build And Test
 
@@ -38,10 +40,23 @@ On macOS/Linux:
 
 `verify` compiles the application, generates OpenAPI interfaces and DTOs, runs tests, runs integration tests, and writes the JaCoCo report under `target/site/jacoco`.
 
+Frontend UI:
+
+```powershell
+cd frontend
+npm ci
+npm run build
+```
+
+The frontend build generates TypeScript API types from `src/main/resources/openapi/discount-coupons-api.yaml` and writes the static Vite output under `frontend/dist`.
+
 In GitHub Actions, the [Coverage and SonarQube](https://github.com/marekmaciejewski/discount-coupons-management/actions/workflows/coverage.yml)
 workflow shows a coverage table in the job summary, uploads the full HTML report as the `jacoco-coverage-report`
 artifact, and publishes analysis to the
 [SonarQube Cloud report](https://sonarcloud.io/summary/overall?id=marekmaciejewski_discount-coupons-management&branch=master).
+
+The [Frontend Pages](https://github.com/marekmaciejewski/discount-coupons-management/actions/workflows/frontend-pages.yml)
+workflow builds the Vite app from `frontend` and deploys it to GitHub Pages.
 
 ## Run Locally
 
@@ -64,6 +79,20 @@ Useful local URLs:
 - [Swagger UI](http://localhost:8080/swagger-ui.html)
 - [OpenAPI JSON](http://localhost:8080/v3/api-docs)
 - [H2 console](http://localhost:8080/h2-console)
+
+Run the frontend locally against the local backend:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+Run the frontend locally against the hosted Render backend:
+
+```powershell
+cd frontend
+npm run dev:render
+```
 
 ## API
 
@@ -88,8 +117,9 @@ create a Web Service from this repository, select the Free instance type, and us
 
 Deployment-relevant environment variables:
 
-| variable                    | example                    | purpose                                               |
-|-----------------------------|----------------------------|-------------------------------------------------------|
-| `PORT`                      | provided by Render         | host-provided server port, defaults to `8080` locally |
-| `SPRING_H2_CONSOLE_ENABLED` | `false`                    | disables the public H2 console in the hosted service  |
-| `JAVA_TOOL_OPTIONS`         | `-XX:MaxRAMPercentage=75`  | caps JVM heap relative to container memory            |
+| variable                    | example                                                    | purpose                                               |
+|-----------------------------|------------------------------------------------------------|-------------------------------------------------------|
+| `PORT`                      | provided by Render                                         | host-provided server port, defaults to `8080` locally |
+| `SPRING_H2_CONSOLE_ENABLED` | `false`                                                    | disables the public H2 console in the hosted service  |
+| `JAVA_TOOL_OPTIONS`         | `-XX:MaxRAMPercentage=75`                                  | caps JVM heap relative to container memory            |
+| `APP_CORS_ALLOWED_ORIGINS`  | `https://marekmaciejewski.github.io,http://localhost:5173` | comma-separated frontend origins allowed by CORS      |

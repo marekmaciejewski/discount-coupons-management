@@ -1,0 +1,35 @@
+{
+  "name": "discount-coupons-management-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run generate:api && vite",
+    "dev:render": "npm run generate:api && vite --mode render",
+    "generate:api": "openapi-typescript ../src/main/resources/openapi/discount-coupons-api.yaml -o src/generated/discount-coupons-api.ts",
+    "lint": "eslint src vite.config.ts --max-warnings=0",
+    "build": "npm run generate:api && tsc -b && vite build --mode render",
+    "preview": "vite preview",
+    "typecheck": "npm run generate:api && tsc -b"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.61.0",
+    "vite": "^8.0.16"
+  }
+}

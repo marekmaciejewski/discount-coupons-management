@@ -6,6 +6,8 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 app:
+  cors:
+    allowed-origins: https://marekmaciejewski.github.io,http://localhost:5173
   geo:
     ipwhois:
       base-url: https://ipwho.is

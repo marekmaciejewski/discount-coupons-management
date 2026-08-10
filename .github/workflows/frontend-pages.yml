@@ -10,11 +10,6 @@ on:
       - ".github/workflows/frontend-pages.yml"
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: frontend-pages
   cancel-in-progress: false
@@ -23,6 +18,8 @@ jobs:
   build:
     name: Build frontend
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Check out sources
@@ -37,7 +34,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build
         working-directory: frontend
@@ -58,6 +55,9 @@ jobs:
     name: Deploy frontend
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

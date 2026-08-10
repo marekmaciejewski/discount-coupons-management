@@ -48,7 +48,7 @@ jobs:
       - name: Prepare frontend sources for analysis
         working-directory: frontend
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm run generate:api
 
       - name: Cache SonarQube packages

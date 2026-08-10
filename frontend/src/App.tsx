@@ -105,16 +105,12 @@ function CouponUsage({
           {currentUses}/{maxUses}
         </span>
       </div>
-      <div
-        className="progress usage-progress"
+      <progress
+        className="usage-progress"
+        value={percent}
+        max={100}
         aria-label={`Wykorzystano ${percent} procent limitu kuponu`}
-        role="progressbar"
-        aria-valuenow={percent}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
-        <div className="progress-bar" style={{ width: `${percent}%` }} />
-      </div>
+      />
       <div className="text-secondary small">Pozostało: {remainingUses}</div>
     </div>
   );
@@ -457,9 +453,9 @@ export default function App() {
               <p>{currentCopy.description}</p>
 
               {showColdStartHint && isRenderBackend && (
-                <div className="alert alert-warning status-alert" role="status">
+                <output className="alert alert-warning status-alert">
                   Render wybudza usługę po przerwie. Pierwsza odpowiedź może potrwać około minuty.
-                </div>
+                </output>
               )}
 
               {errorMessage && (
@@ -469,9 +465,9 @@ export default function App() {
               )}
 
               {successMessage && (
-                <div className="alert alert-success status-alert" role="status">
+                <output className="alert alert-success status-alert">
                   {successMessage}
-                </div>
+                </output>
               )}
 
               {renderActiveForm()}
